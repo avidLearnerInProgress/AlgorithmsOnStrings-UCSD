@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 using namespace std;
 
 int const Letters =    4;
@@ -13,14 +12,11 @@ int const NA      =   -1;
 struct Node
 {
 	int next [Letters];
-
-	Node ()
-	{
+	Node () {
 		fill (next, next + Letters, NA);
 	}
 
-	bool isLeaf () const
-	{
+	bool isLeaf () const {
 	    return (next[0] == NA && next[1] == NA && next[2] == NA && next[3] == NA);
 	}
 };
@@ -80,9 +76,8 @@ vector <int> solve (const string& text, int n, const vector <string>& patterns)
                 }
                 current_symbol = letterToIndex(text[current_index]); //ensure that you traverse your current_symbol pointer to next char based on current_index
             }
-            else 
-            //Can't find any other scenario to build but since its infinite loop lets break it.. Don't think this will reach anytime..
-            //Since problem states there is definitely a match of text from trie patterns
+            else  //Can't find any other scenario to build but since its infinite loop lets break it.. Don't think this will reach anytime..
+                  //Since problem states there is definitely a match of text from trie patterns
                 break;
         }
     }

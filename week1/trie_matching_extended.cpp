@@ -34,106 +34,81 @@ int letterToIndex (char letter)
 	}
 }
 
-void build_trie (const vector <string>& patterns, vector<Node> &t)
-{	
-	for (int i = 0; i < patterns.size(); i++)
-	{
-		int x = 0;
-		for (int j = 0; j < patterns[i].size(); j++)
-		{
-			int index = letterToIndex(patterns[i][j]);
-			if (x >= t.size())
-			{
-				t.resize(x + 1);
-			}
-			if (t[x].next[index] != -1)
-			{
-				x = t[x].next[index];
-			}
-			else
-			{
-				t[x].next[index] = t.size();
-				x = t[x].next[index];
-				t.resize(x + 1);
-			}
-		}
-		t[x].patternEnd = true;
-	}
-
-}
-
-vector <int> solve (const string& text, int n, const vector <string>& patterns)
+vector <int> solve (string text, int n, vector <string> patterns)
 {
 	vector <int> result;
 
 	// write your code here
-	vector<Node> t;
-	build_trie(patterns, t);
+    //lets build trie first -- attempt 2
+    vector<Node> t(1);
 
-	for (int i = 0; i < text.size(); i++)
-	{
-		int index = letterToIndex(text[i]);
-		int x = 0;
-		if (t[x].next[index] != -1)
-		{
-			bool found = true;
-			for (int j = i; !t[x].patternEnd ; j++)
-			{
-				if (j >= text.size())
-				{
-					found = false;
-					break;
-				}
-				index = letterToIndex(text[j]);
-				if (t[x].next[index] != -1)
-				{
-					x = t[x].next[index];
-				}
-				else
-				{
-					found = false;
-					break;
-				}
-			}
-			if (found)
-			{
-				result.push_back(i);
-			}
-		}
-	}
+    for(int i = 0; i < n; i++){
+        int current_node = 0;
+        for(int j = 0; j < patterns[i].size(); j++){
+            int current_symbol = letterToIndex(patterns[i][j]); //symbol
+            if(t[current_node].next[current_symbol] != NA){
+                current_node = t[current_node].next[current_symbol];
+            }
+            else{
+                t.push_back(Node());
+                t[current_node].next[current_symbol] = t.size() - 1;
+                current_node = t.size() - 1;
+            }
+            if(j == patterns[i].size() - 1)
+                t[current_node].patternEnd = true; //check if current pattern reached its end !!
+        }
+    }
 
+    //check for pattern substr match within text
+    for(int i = 0; i < text.size(); i++){
+        int current_index = i;
+        int current_node = 0;
+        int current_symbol = letterToIndex(text[current_index]);
+        while(1){
+            if(t[current_node].patternEnd){ //instead of checking for leaf, check for last char in pattern
+                result.push_back(i);
+                break;
+            }
+            else if(t[current_node].next[current_symbol] != NA){
+                current_node = t[current_node].next[current_symbol];
+                current_index++;
+                if(current_index == text.size()){
+                    if(t[current_node].patternEnd)
+                        result.push_back(i);
+                    break;
+                }
+                current_symbol = letterToIndex(text[current_index]);
+            }
+            else
+                break;
+        }
+    }
 	return result;
 }
 
-int main (void)
-{
-	string t;
-	cin >> t;
+int main(void) {
+  string t;
+  cin >> t;
 
-	int n;
-	cin >> n;
+  int n;
+  cin >> n;
 
-	vector <string> patterns (n);
-	for (int i = 0; i < n; i++)
-	{
-		cin >> patterns[i];
-	}
+  vector<string> patterns(n);
+  for (int i = 0; i < n; i++) {
+    cin >> patterns[i];
+  }
 
-	vector <int> ans;
-	ans = solve (t, n, patterns);
+  vector<int> ans;
+  ans = solve(t, n, patterns);
 
-	for (int i = 0; i < (int) ans.size (); i++)
-	{
-		cout << ans[i];
-		if (i + 1 < (int) ans.size ())
-		{
-			cout << " ";
-		}
-		else
-		{
-			cout << endl;
-		}
-	}
+  for (int i = 0; i < (int)ans.size(); i++) {
+    cout << ans[i];
+    if (i + 1 < (int)ans.size()) {
+      cout << " ";
+    } else {
+      cout << endl;
+    }
+  }
 
-	return 0;
+  return 0;
 }
